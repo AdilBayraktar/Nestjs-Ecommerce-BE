@@ -1,26 +1,23 @@
 import { Body, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
+import { Repository } from 'typeorm';
+import { Product } from './product.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
-type ProductType = {
-  id: number;
-  name: string;
-  price: number;
-};
 @Injectable()
 export class ProductsService {
-  private products: ProductType[] = [
-    { id: 1, name: 'Product 1', price: 100 },
-    { id: 2, name: 'Product 2', price: 200 },
-    { id: 3, name: 'Product 3', price: 300 },
-  ];
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
   public getAllProducts() {
-    return this.products;
+    return this.productRepository.find();
   }
 
-  public getSingleProduct(id: string) {
-    const product = this.products.find((product) => product.id === parseInt(id));
+  public async getSingleProduct(id: number) {
+    const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
       throw new NotFoundException('Product not found');
     }
@@ -29,30 +26,27 @@ export class ProductsService {
   }
 
   public createProduct(body: CreateProductDTO) {
-    const newProduct: ProductType = {
-      id: this.products.length + 1,
-      name: body.name,
-      price: body.price,
+    const newProduct = this.productRepository.create(body);
+    return this.productRepository.save(newProduct);
+  }
+
+  public async updateProduct(id: number, body: UpdateProductDTO) {
+    const product = await this.getSingleProduct(id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    product.name = body.name ?? product.name;
+    product.description = body.description ?? product.description;
+    product.price = body.price ?? product.price;
+
+    return this.productRepository.save(product);
+  }
+
+  public async deleteProduct(id: number) {
+    const product = await this.getSingleProduct(id);
+    await this.productRepository.remove(product);
+    return {
+      message: 'Product deleted successfully',
     };
-    this.products.push(newProduct);
-    return newProduct;
-  }
-
-  public updateProduct(id: string, body: UpdateProductDTO) {
-    const product = this.products.find((product) => product.id === parseInt(id));
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
-    console.log(body);
-    return { message: 'Product updated successfully', product: { ...product, ...body } };
-  }
-
-  public deleteProduct(id: string) {
-    const product = this.products.find((product) => product.id === parseInt(id));
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
-    console.log(id);
-    return { message: 'Product deleted successfully', product };
   }
 }

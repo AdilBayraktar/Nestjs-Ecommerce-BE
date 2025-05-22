@@ -12,7 +12,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  public getSingleProduct(@Param('id', ParseIntPipe) id: string) {
+  public getSingleProduct(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.getSingleProduct(id);
   }
 
@@ -22,12 +22,12 @@ export class ProductsController {
   }
 
   @Put(':id')
-  public updateProduct(@Param('id') id: string, @Body() body: UpdateProductDTO) {
+  public updateProduct(@Param('id') id: number, @Body() body: UpdateProductDTO) {
     return this.productsService.updateProduct(id, body);
   }
 
   @Delete(':id')
-  public deleteProduct(@Param('id') id: string) {
-    return this.productsService.deleteProduct(id);
+  public async deleteProduct(@Param('id') id: number) {
+    return await this.productsService.deleteProduct(id);
   }
 }

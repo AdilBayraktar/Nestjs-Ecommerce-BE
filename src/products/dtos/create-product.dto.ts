@@ -1,10 +1,18 @@
-import { IsNotEmpty, IsNumber, IsString, Length, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
 export class CreateProductDTO {
-  @IsString({ message: 'Name must be a string' })
-  @IsNotEmpty({ message: 'Name is required' })
-  @Length(3, 150, { message: 'Name must be between 3 and 150 characters' })
+  @IsString({ message: 'Product title must be a string' })
+  @IsNotEmpty({ message: 'Product title is required' })
+  @Length(3, 150, { message: 'Product title must be between 3 and 150 characters' })
   name: string;
+
+  @IsString({ message: 'Product description must be a string' })
+  @IsNotEmpty({ message: 'Product description is required' })
+  @Length(3, 500, { message: 'Product description must be between 3 and 500 characters' })
+  description: string;
+
+  @IsOptional()
+  ImageUrl: string;
 
   @IsNotEmpty({ message: 'Price is required' })
   @IsNumber({}, { message: 'Price must be a number' })
