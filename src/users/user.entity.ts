@@ -2,15 +2,7 @@ import { Product } from 'src/products/product.entity';
 import { Review } from 'src/reviews/review.entity';
 import { CURRENT_TIMESTAMP } from 'src/utils/constants';
 import { UserType } from 'src/utils/enums';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
