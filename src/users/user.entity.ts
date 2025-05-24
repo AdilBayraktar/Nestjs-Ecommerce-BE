@@ -21,7 +21,7 @@ export class User {
   @Column({ type: 'enum', enum: UserType, default: UserType.NORMAL_USER })
   userType: UserType;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   isAccountVerified: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => CURRENT_TIMESTAMP })
