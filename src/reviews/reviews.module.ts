@@ -10,7 +10,5 @@ import { Review } from './review.entity';
   imports: [TypeOrmModule.forFeature([Review])],
 })
 export class ReviewsModule {
-  constructor() {
-    console.log('Reviews module loaded');
-  }
+  constructor() {}
 }

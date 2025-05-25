@@ -17,7 +17,6 @@ import { Review } from './reviews/review.entity';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
         return {
           type: 'postgres',
           database: config.get<string>('DB_NAME'),
@@ -35,7 +34,6 @@ import { Review } from './reviews/review.entity';
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
       load: [
         () => {
-          console.log('🔧 ENV FILE LOADED:', process.env.NODE_ENV);
           return {};
         },
       ],

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { RegisterDto } from './dtos/register.dto';
@@ -8,6 +8,8 @@ import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenType, JWTPayloadType } from 'src/utils/types';
 import { ConfigService } from '@nestjs/config';
+import { UpdateUserDto } from './dtos/update-user.dto';
+import { UserType } from 'src/utils/enums';
 
 @Injectable()
 export class UsersService {
@@ -23,8 +25,8 @@ export class UsersService {
     if (checkUser) {
       throw new BadRequestException('User already exists');
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const hashedPassword = await this.hashPassword(password);
     let newUser = this.userRepository.create({
       email,
       password: hashedPassword,
@@ -57,7 +59,41 @@ export class UsersService {
     return user;
   }
 
+  public async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find({});
+  }
+
+  public async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    const { password, username } = updateUserDto;
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    user.username = username ?? user.username;
+    if (password) {
+      user.password = await this.hashPassword(password);
+    }
+    return this.userRepository.save(user);
+  }
+
+  public async deleteUser(userId: number, payload: JWTPayloadType) {
+    const user = await this.getCurrentUser(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    if (user.id === payload.id && payload.userType === UserType.ADMIN) {
+      await this.userRepository.remove(user);
+      return { message: 'User deleted successfully' };
+    }
+    throw new ForbiddenException('Access denied, You are not authorized to delete this user');
+  }
+
   private async generateToken(payload: JWTPayloadType): Promise<string> {
     return this.jwtService.signAsync(payload);
+  }
+
+  private async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
   }
 }

@@ -21,7 +21,5 @@ import { ConfigService } from '@nestjs/config';
   ],
 })
 export class UsersModule {
-  constructor() {
-    console.log('Reviews module loaded');
-  }
+  constructor() {}
 }

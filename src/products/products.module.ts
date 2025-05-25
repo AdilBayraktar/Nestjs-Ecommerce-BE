@@ -10,7 +10,5 @@ import { Product } from './product.entity';
   imports: [TypeOrmModule.forFeature([Product])],
 })
 export class ProductsModule {
-  constructor() {
-    console.log('Products module loaded');
-  }
+  constructor() {}
 }
