@@ -7,12 +7,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenType, JWTPayloadType } from 'src/utils/types';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
 
   public async register(registerDTO: RegisterDto): Promise<AccessTokenType> {
@@ -45,6 +47,14 @@ export class UsersService {
     }
     const accessToken = await this.generateToken({ id: user.id, userType: user.userType });
     return { accessToken };
+  }
+
+  public async getCurrentUser(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
   }
 
   private async generateToken(payload: JWTPayloadType): Promise<string> {
