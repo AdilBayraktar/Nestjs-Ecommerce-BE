@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Product } from 'src/products/product.entity';
 import { Review } from 'src/reviews/review.entity';
 import { CURRENT_TIMESTAMP } from 'src/utils/constants';
@@ -16,6 +17,7 @@ export class User {
   email: string;
 
   @Column({ type: 'varchar' })
+  @Exclude()
   password: string;
 
   @Column({ type: 'enum', enum: UserType, default: UserType.NORMAL_USER })

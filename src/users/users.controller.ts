@@ -41,6 +41,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   public getCurrentUser(@CurrentUser() payload: JWTPayloadType) {
+    console.log('Get Current User Route Called');
     return this.usersService.getCurrentUser(payload.id);
   }
 
