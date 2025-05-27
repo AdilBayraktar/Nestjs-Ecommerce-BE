@@ -14,6 +14,15 @@ export class ReviewsService {
     private readonly usersService: UsersService,
   ) {}
 
+  /**
+   * Creates a new review for a product by a user.
+   * @param productId - The ID of the product being reviewed.
+   * @param userId - The ID of the user creating the review.
+   * @param dto - The data transfer object containing review details.
+   * @returns The created review details.
+   * @access private
+   * @throws ForbiddenException if the user is trying to review their own product.
+   */
   public async createReview(productId: number, userId: number, dto: CreateReviewDto) {
     const product = await this.productsService.getSingleProduct(productId);
     const user = await this.usersService.getCurrentUser(userId);
@@ -53,8 +62,17 @@ export class ReviewsService {
     };
   }
 
-  public async getAllReviews() {
+  /**
+   * Retrieves all reviews with pagination.
+   * @param pageNumber - The page number for pagination.
+   * @param pageSize - The number of reviews per page.
+   * @returns A list of reviews with pagination.
+   * @access public
+   */
+  public async getAllReviews(pageNumber: number, pageSize: number) {
     const reviews = await this.reviewsRepository.find({
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
       relations: ['user', 'product'],
       order: { createdAt: 'DESC' },
     });
@@ -69,6 +87,12 @@ export class ReviewsService {
     }));
   }
 
+  /**
+   * Retrieves all reviews made by a specific user.
+   * @param userId - The ID of the user whose reviews are to be fetched.
+   * @returns A list of reviews made by the user.
+   * @access private
+   */
   public async getAllReviewsByUser(userId: number) {
     const reviews = await this.reviewsRepository.find({
       where: { user: { id: userId } },
@@ -86,6 +110,12 @@ export class ReviewsService {
     }));
   }
 
+  /**
+   * Retrieves all reviews for a specific product.
+   * @param productId - The ID of the product whose reviews are to be fetched.
+   * @returns A list of reviews for the product.
+   * @access public
+   */
   public async getAllReviewsByProduct(productId: number) {
     const reviews = await this.reviewsRepository.find({
       where: { product: { id: productId } },
@@ -103,6 +133,13 @@ export class ReviewsService {
     }));
   }
 
+  /**
+   * Retrieves a review by its ID.
+   * @param id - The ID of the review to be fetched.
+   * @returns The review details.
+   * @access public
+   * @throws NotFoundException if the review does not exist.
+   */
   public async getReviewById(id: number) {
     const result = await this.reviewsRepository.findOne({
       where: { id },
@@ -123,6 +160,16 @@ export class ReviewsService {
     };
   }
 
+  /**
+   * Updates an existing review.
+   * @param reviewId - The ID of the review to be updated.
+   * @param userId - The ID of the user updating the review.
+   * @param dto - The data transfer object containing updated review details.
+   * @returns The updated review details.
+   * @access private
+   * @throws NotFoundException if the review does not exist.
+   * @throws ForbiddenException if the user is not the owner of the review.
+   */
   public async updateReview(reviewId: number, userId: number, dto: CreateReviewDto) {
     const review = await this.getReviewById(reviewId);
     if (!review) {
@@ -147,6 +194,15 @@ export class ReviewsService {
     };
   }
 
+  /**
+   * Deletes a review by its ID.
+   * @param reviewId - The ID of the review to be deleted.
+   * @param userId - The ID of the user deleting the review.
+   * @returns A success message if deletion is successful.
+   * @access private
+   * @throws NotFoundException if the review does not exist.
+   * @throws ForbiddenException if the user is not the owner of the review.
+   */
   public async deleteReview(reviewId: number, userId: number) {
     const review = await this.getReviewById(reviewId);
     if (review.userId !== userId) {

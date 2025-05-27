@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CurrentUser } from 'src/users/decorators/current-user.decorator';
 import { CreateReviewDto } from './dtos/create-review.dto';
@@ -10,8 +10,11 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Get()
-  public getAllReviews() {
-    return this.reviewsService.getAllReviews();
+  public getAllReviews(
+    @Query('pageNumber', ParseIntPipe) pageNumber: number = 1,
+    @Query('pageSize', ParseIntPipe) pageSize: number = 100,
+  ) {
+    return this.reviewsService.getAllReviews(pageNumber, pageSize);
   }
 
   @Post(':productId')
@@ -31,13 +34,11 @@ export class ReviewsController {
   }
 
   @Get('/products/:productId')
-  @UseGuards(AuthGuard)
   public getAllReviewsByProduct(@Param('productId', ParseIntPipe) productId: number) {
     return this.reviewsService.getAllReviewsByProduct(productId);
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard)
   public getSingleReview(@Param('id', ParseIntPipe) id: number) {
     return this.reviewsService.getReviewById(id);
   }
