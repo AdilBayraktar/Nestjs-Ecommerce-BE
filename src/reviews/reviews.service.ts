@@ -66,6 +66,7 @@ export class ReviewsService {
    * Retrieves all reviews with pagination.
    * @param pageNumber - The page number for pagination.
    * @param pageSize - The number of reviews per page.
+   * @description This method fetches a list of reviews from the database, allowing for pagination.
    * @returns A list of reviews with pagination.
    * @access public
    */
@@ -90,6 +91,7 @@ export class ReviewsService {
   /**
    * Retrieves all reviews made by a specific user.
    * @param userId - The ID of the user whose reviews are to be fetched.
+   * @description This method fetches all reviews made by a user, including the product id and user id.
    * @returns A list of reviews made by the user.
    * @access private
    */
@@ -113,6 +115,8 @@ export class ReviewsService {
   /**
    * Retrieves all reviews for a specific product.
    * @param productId - The ID of the product whose reviews are to be fetched.
+   * @description This method fetches all reviews for a product, including the user id and product id.
+   * It allows users to see what others have said about the product.
    * @returns A list of reviews for the product.
    * @access public
    */
@@ -136,6 +140,7 @@ export class ReviewsService {
   /**
    * Retrieves a review by its ID.
    * @param id - The ID of the review to be fetched.
+   * @description This method fetches a single review from the database by its ID,
    * @returns The review details.
    * @access public
    * @throws NotFoundException if the review does not exist.
@@ -165,6 +170,7 @@ export class ReviewsService {
    * @param reviewId - The ID of the review to be updated.
    * @param userId - The ID of the user updating the review.
    * @param dto - The data transfer object containing updated review details.
+   * @description This method allows a user to update their own review.
    * @returns The updated review details.
    * @access private
    * @throws NotFoundException if the review does not exist.
@@ -198,6 +204,7 @@ export class ReviewsService {
    * Deletes a review by its ID.
    * @param reviewId - The ID of the review to be deleted.
    * @param userId - The ID of the user deleting the review.
+   * @description This method allows a user to delete their own review.
    * @returns A success message if deletion is successful.
    * @access private
    * @throws NotFoundException if the review does not exist.

@@ -17,6 +17,12 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
+  /**
+   * Registers a new user and returns an access token.
+   * @param registerDTO - The registration data transfer object.
+   * @returns An access token for the newly registered user.
+   * @throws BadRequestException if the user already exists.
+   */
   public async register(registerDTO: RegisterDto): Promise<AccessTokenType> {
     const { email, password, username } = registerDTO;
     const checkUser = await this.userRepository.findOne({ where: { email } });
@@ -35,6 +41,12 @@ export class AuthService {
     return { accessToken };
   }
 
+  /**
+   * Logs in a user and returns an access token.
+   * @param loginDto - The login data transfer object containing email and password.
+   * @returns An access token for the logged-in user.
+   * @throws BadRequestException if the credentials are invalid.
+   */
   public async login(loginDto: LoginDto): Promise<AccessTokenType> {
     const { email, password } = loginDto;
     const user = await this.userRepository.findOne({ where: { email } });
