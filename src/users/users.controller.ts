@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { RegisterDto } from './dtos/register.dto';
@@ -53,8 +54,11 @@ export class UsersController {
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRolesGuard)
   @HttpCode(HttpStatus.OK)
-  public async getAllUsers() {
-    return this.usersService.getAllUsers();
+  public async getAllUsers(
+    @Query('pageNumber', ParseIntPipe) pageNumber: number = 1,
+    @Query('pageSize', ParseIntPipe) pageSize: number = 100,
+  ) {
+    return this.usersService.getAllUsers(pageNumber, pageSize);
   }
 
   @Put()

@@ -103,6 +103,7 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException('User not found');
     }
+    console.log('first', user.id, payload.id, payload.userType);
     if (user.id === payload.id || payload.userType === UserType.ADMIN) {
       await this.userRepository.remove(user);
       return { message: 'User deleted successfully' };

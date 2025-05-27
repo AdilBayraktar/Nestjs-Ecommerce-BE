@@ -20,9 +20,9 @@ export class Review {
   @UpdateDateColumn({ type: 'timestamp', default: () => CURRENT_TIMESTAMP, onUpdate: CURRENT_TIMESTAMP })
   updatedAt: Date;
 
-  @ManyToOne(() => Product, (product) => product.reviews)
+  @ManyToOne(() => Product, (product) => product.reviews, { onDelete: 'CASCADE' })
   product: Product;
 
-  @ManyToOne(() => User, (user) => user.reviews)
+  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
   user: User;
 }
