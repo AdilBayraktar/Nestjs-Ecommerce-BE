@@ -53,6 +53,22 @@ export class ReviewsService {
     };
   }
 
+  public async getAllReviews() {
+    const reviews = await this.reviewsRepository.find({
+      relations: ['user', 'product'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return reviews.map((review) => ({
+      id: review.id,
+      comment: review.comment,
+      rating: review.rating,
+      productId: review.product.id,
+      userId: review.user.id,
+      createdAt: review.createdAt,
+    }));
+  }
+
   public async getAllReviewsByUser(userId: number) {
     const reviews = await this.reviewsRepository.find({
       where: { user: { id: userId } },

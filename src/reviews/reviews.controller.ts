@@ -11,7 +11,7 @@ export class ReviewsController {
 
   @Get()
   public getAllReviews() {
-    // return this.reviewsService.getAllReviews();
+    return this.reviewsService.getAllReviews();
   }
 
   @Post(':productId')
