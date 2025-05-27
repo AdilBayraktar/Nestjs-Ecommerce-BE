@@ -4,16 +4,20 @@ import { UpdateProductDTO } from './dtos/update-product.dto';
 import { Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    private readonly usersService: UsersService,
   ) {}
 
   public getAllProducts() {
-    return this.productRepository.find();
+    return this.productRepository.find({
+      relations: ['user', 'reviews'],
+    });
   }
 
   public async getSingleProduct(id: number) {
@@ -24,8 +28,14 @@ export class ProductsService {
     return product;
   }
 
-  public createProduct(body: CreateProductDTO) {
-    const newProduct = this.productRepository.create(body);
+  public async createProduct(body: CreateProductDTO, userId: number) {
+    const user = await this.usersService.getCurrentUser(userId);
+    const newProduct = this.productRepository.create({
+      ...body,
+      name: body.name.trim().toLowerCase(),
+      description: body.description.trim().toLowerCase(),
+      user,
+    });
     return this.productRepository.save(newProduct);
   }
 
