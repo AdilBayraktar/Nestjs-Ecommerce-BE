@@ -21,10 +21,14 @@ import { Roles } from './decorators/user-role.decorator';
 import { UserType } from 'src/utils/enums';
 import { AuthRolesGuard } from './guards/auth-roles.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { AuthService } from './auth.service';
 
 @Controller('/api/v1/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post('/register')
   public async register(@Body() body: RegisterDto) {
