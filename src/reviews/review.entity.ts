@@ -9,7 +9,7 @@ export class Review {
   id: number;
 
   @Column({ type: 'int' })
-  reating: number;
+  rating: number;
 
   @Column({ type: 'varchar' })
   comment: string;
