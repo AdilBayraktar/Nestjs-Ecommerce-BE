@@ -13,12 +13,14 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Get()
   public getAllProducts(
+    @Query('pageNumber', ParseIntPipe) pageNumber: number = 1,
+    @Query('pageSize', ParseIntPipe) pageSize: number = 100,
     @Query('name') name: string,
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
   ) {
     console.log(name);
-    return this.productsService.getAllProducts(name, minPrice, maxPrice);
+    return this.productsService.getAllProducts(pageNumber, pageSize, name, minPrice, maxPrice);
   }
 
   @Get(':id')
