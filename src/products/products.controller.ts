@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { ProductsService } from './products.service';
@@ -12,8 +12,13 @@ import { JWTPayloadType } from 'src/utils/types';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Get()
-  public getAllProducts() {
-    return this.productsService.getAllProducts();
+  public getAllProducts(
+    @Query('name') name: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+  ) {
+    console.log(name);
+    return this.productsService.getAllProducts(name, minPrice, maxPrice);
   }
 
   @Get(':id')
