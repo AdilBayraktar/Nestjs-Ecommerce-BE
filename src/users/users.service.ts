@@ -8,6 +8,8 @@ import { UserType } from 'src/utils/enums';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
 import { AuthService } from './auth.service';
+import { join } from 'node:path';
+import { unlinkSync } from 'node:fs';
 
 @Injectable()
 export class UsersService {
@@ -109,5 +111,27 @@ export class UsersService {
       return { message: 'User deleted successfully' };
     }
     throw new ForbiddenException('Access denied, You are not authorized to delete this user');
+  }
+
+  public async setProfileImage(userId: number, newProfileImage: string) {
+    const user = await this.getCurrentUser(userId);
+    if (user.profileImage === '') {
+      user.profileImage = newProfileImage;
+    } else {
+      await this.removeProfileImage(userId);
+      user.profileImage = newProfileImage;
+    }
+    return this.userRepository.save(user);
+  }
+
+  public async removeProfileImage(userId: number) {
+    const user = await this.getCurrentUser(userId);
+    if (user.profileImage === '') {
+      throw new BadRequestException('There is no profile image');
+    }
+    const imgPath = join(process.cwd(), `./imgs/users/${user.profileImage}`);
+    unlinkSync(imgPath);
+    user.profileImage = '';
+    return this.userRepository.save(user);
   }
 }

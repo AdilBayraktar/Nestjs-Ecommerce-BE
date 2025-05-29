@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,7 +11,10 @@ import {
   Post,
   Put,
   Query,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { RegisterDto } from './dtos/register.dto';
 import { UsersService } from './users.service';
@@ -23,6 +27,8 @@ import { UserType } from 'src/utils/enums';
 import { AuthRolesGuard } from './guards/auth-roles.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { AuthService } from './auth.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('/api/v1/users')
 export class UsersController {
@@ -73,5 +79,19 @@ export class UsersController {
   @UseGuards(AuthRolesGuard)
   public async deleteUser(@Param('id', ParseIntPipe) id: number, @CurrentUser() payload: JWTPayloadType) {
     return this.usersService.deleteUser(id, payload);
+  }
+
+  @Post('upload-image')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('user-image'))
+  public oploadProfileImage(@CurrentUser() payload: JWTPayloadType, @UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('No image provided');
+    return this.usersService.setProfileImage(payload.id, file.filename);
+  }
+
+  @Get('images/:image')
+  @UseGuards(AuthGuard)
+  public getProfileImage(@Param('image') image: string, @Res() res: Response) {
+    return res.sendFile(image, { root: 'imgs/users' });
   }
 }
