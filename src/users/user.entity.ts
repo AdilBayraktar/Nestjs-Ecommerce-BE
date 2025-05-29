@@ -24,7 +24,10 @@ export class User {
   userType: UserType;
 
   @Column({ type: 'boolean', default: false })
-  isAccountVerified: string;
+  isAccountVerified: boolean;
+
+  @Column({ nullable: true })
+  verificationToken: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => CURRENT_TIMESTAMP })
   createdAt: Date;

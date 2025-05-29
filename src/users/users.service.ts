@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,7 +24,7 @@ export class UsersService {
    * @description This method creates a new user in the database and generates an access token for them.
    * @returns An access token for the newly registered user.
    */
-  public async register(registerDTO: RegisterDto): Promise<AccessTokenType> {
+  public async register(registerDTO: RegisterDto) {
     return this.authService.register(registerDTO);
   }
 
@@ -34,7 +34,7 @@ export class UsersService {
    * @description This method authenticates the user and generates an access token.
    * @returns An access token for the logged-in user.
    */
-  public async login(loginDto: LoginDto): Promise<AccessTokenType> {
+  public async login(loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
@@ -133,5 +133,19 @@ export class UsersService {
     unlinkSync(imgPath);
     user.profileImage = '';
     return this.userRepository.save(user);
+  }
+
+  public async verifyEmail(userId: number, verificationToken: string) {
+    const user = await this.getCurrentUser(userId);
+    if (user.verificationToken === null) {
+      throw new NotFoundException('There is no verification token');
+    }
+    if (user.verificationToken !== verificationToken) {
+      throw new BadRequestException('Invalid link');
+    }
+    user.isAccountVerified = true;
+    user.verificationToken = '';
+    await this.userRepository.save(user);
+    return { message: 'Your email has been verified, please log in your account' };
   }
 }
